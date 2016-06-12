@@ -38,10 +38,6 @@
                 Foreground="White" FontWeight="UltraLight" BorderBrush="WhiteSmoke" Background="DarkRed">Przycisk specjalny</Button>
         <Label Name="Info" Canvas.Left="200" Canvas.Top="290" Foreground="Gray">
             Aby stworzyć notatkę, kliknij prawym przyciskiem myszy w dowolnym miejscu.</Label>
-        <TextBox Name="Info2" Canvas.Left="394" Canvas.Top="534" Foreground="Gray">
-            Nic</TextBox>
-        <Button Name="Enter" Click="Enter_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="35" Canvas.Top="379"
-                Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">Enter</Button>
 
 
     </Canvas>

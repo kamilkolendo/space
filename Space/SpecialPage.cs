@@ -14,7 +14,7 @@ namespace Space
 
         private int choice;
         private string result;
-        private string choice2;
+        private string choice2 = "hej";
 
         public SpecialPage()
         {
@@ -25,21 +25,6 @@ namespace Space
             this.Height = 340;
             this.SetValue(Canvas.LeftProperty, cWidth/2 - this.Width/2);
             this.SetValue(Canvas.TopProperty, cHeight/2 - this.Height/2);
-            
-            //First Text
-            var fecTextBlock1 = new FrameworkElementFactory(typeof(TextBlock));
-            fecTextBlock1.SetValue(FrameworkElement.MarginProperty, new Thickness(5, 25, 0, 0));
-            fecTextBlock1.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Top);
-            fecTextBlock1.SetValue(FrameworkElement.WidthProperty, 200.0);
-            fecTextBlock1.SetValue(TextBlock.ForegroundProperty, Brushes.White);
-            TextBlock tb = new TextBlock();
-            tb.Text = "    Powiedz mi, która z kolorowych\r" +
-                      "     figur podoba Ci sie najbardziej,\r" +
-                      " a ja dzięki zdziwiającej mocy enuma,\r" +
-                      "      interfejsu i obsługi wyjątków\r" +
-                      "    powiem Ci, jakiego jest koloru!!!\r\r" +
-                      "   1)       2)       3)       4)       5)       6)";
-            fecTextBlock1.SetValue(TextBlock.TextProperty, tb.Text);
 
             //Shapes
             MyRectangle redRect = new MyRectangle();
@@ -66,6 +51,21 @@ namespace Space
             FrameworkElementFactory fecPinkRect = pinkRect.GetShape("Pink");
             fecPinkRect.SetValue(FrameworkElement.MarginProperty, new Thickness(163, 0, 0, 0));
 
+            //First Text
+            var fecTextBlock1 = new FrameworkElementFactory(typeof(TextBlock));
+            fecTextBlock1.SetValue(FrameworkElement.MarginProperty, new Thickness(5, 25, 0, 0));
+            fecTextBlock1.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Top);
+            fecTextBlock1.SetValue(FrameworkElement.WidthProperty, 200.0);
+            fecTextBlock1.SetValue(TextBlock.ForegroundProperty, Brushes.White);
+            TextBlock tb = new TextBlock();
+            tb.Text = "    Powiedz mi, która z kolorowych\r" +
+                      "     figur podoba Ci sie najbardziej,\r" +
+                      " a ja dzięki zdziwiającej mocy enuma,\r" +
+                      "      interfejsu i obsługi wyjątków\r" +
+                      "    powiem Ci, jakiego jest koloru!!!\r\r" +
+                      "   1)       2)       3)       4)       5)       6)";
+            fecTextBlock1.SetValue(TextBlock.TextProperty, tb.Text);
+
             //Second Text
             var fecTextBlock2 = new FrameworkElementFactory(typeof(TextBlock));
             fecTextBlock2.SetValue(FrameworkElement.MarginProperty, new Thickness(75, 200, 0, 0));
@@ -82,7 +82,7 @@ namespace Space
             fecInputTextBox.SetValue(FrameworkElement.MarginProperty, new Thickness(0, 225, 0, 0));
             fecInputTextBox.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Top);
             fecInputTextBox.SetValue(FrameworkElement.WidthProperty, 12.0);
-            fecInputTextBox.SetValue(TextBox.NameProperty, "InputBox");
+            choice2 = fecInputTextBox.Text;
 
             //Button
             var fecButton = new FrameworkElementFactory(typeof(Button));

@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 
 namespace Space
 {
-             // DZIEDZICZENIE //
+    // DZIEDZICZENIE //
     public class Page : Thumb
     {
         private int id;

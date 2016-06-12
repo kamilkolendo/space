@@ -19,8 +19,6 @@ namespace Space
         private static List<Page> pages = new List<Page>();
         private int i = 0;
         public static bool doesSpecialBoxExists = false;
-        public static string wynik = "Nic";
-        public static bool cosSieStalo = false;
 
         public MainWindow()
         {
@@ -102,22 +100,6 @@ namespace Space
 
             myCanvas.Children.Add(pages[i]);
             i++;
-
-            if (cosSieStalo)
-            {
-                Info2.Text = "Woah";
-            }
-            else
-            {
-                Info2.Text = "Blep";
-            }
-        }
-
-
-
-        private void Enter_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(Info2.Text);
         }
     }
 }
