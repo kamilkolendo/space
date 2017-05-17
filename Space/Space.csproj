@@ -58,7 +58,7 @@
     </ApplicationDefinition>
     <Compile Include="MyCircle.cs" />
     <Compile Include="MyRectangle.cs" />
-    <Compile Include="SpecialPage.cs" />
+    <Compile Include="Page.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -73,7 +73,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Page.cs" />
+    <Compile Include="OldPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -12,33 +12,112 @@
         WindowStyle="None"       
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
-        ResizeMode="CanResizeWithGrip"
-        MouseDown="Window_MouseDown">
+        ResizeMode="CanResize"
+        MouseDown="Window_MouseDown"
+        MouseUp="Window_MouseUp"
+        MouseMove="Window_MouseMove"
+        PreviewMouseWheel="MouseWheelHandler">
 
     <Window.Background>
         <SolidColorBrush Opacity="0.7" Color="Black"/>
     </Window.Background>
 
+    <Window.RenderTransform>
+        <TransformGroup>
+            <TranslateTransform x:Name="windowTranslate" />
+            <ScaleTransform x:Name="windowScale" />
+        </TransformGroup>
+    </Window.RenderTransform>
 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
 
-    <Canvas Name="myCanvas" 
-            Background="Transparent"
-            MouseMove="Canvas_MouseMove"
-            MouseDown="Canvas_MouseDown">
+        <Thumb Grid.Column="0" Grid.Row="0" Cursor="SizeNWSE" Opacity="0" DragDelta="Window_ResizeNW"></Thumb>
+        <Thumb Grid.Column="0" Grid.Row="1" Cursor="SizeWE" Opacity="0" DragDelta="Window_ResizeW"></Thumb>
+        <Thumb Grid.Column="0" Grid.Row="2" Cursor="SizeNESW" Opacity="0" DragDelta="Window_ResizeSW"></Thumb>
+        <Thumb Grid.Column="1" Grid.Row="0" Cursor="SizeNS" Opacity="0" DragDelta="Window_ResizeN"></Thumb>
+        <Thumb Grid.Column="1" Grid.Row="2" Cursor="SizeNS" Opacity="0" DragDelta="Window_ResizeS"></Thumb>
+        <Thumb Grid.Column="2" Grid.Row="0" Cursor="SizeNESW" Opacity="0" DragDelta="Window_ResizeNE"></Thumb>
+        <Thumb Grid.Column="2" Grid.Row="1" Cursor="SizeWE" Opacity="0" DragDelta="Window_ResizeE"/>
+        <Thumb Grid.Column="2" Grid.Row="2" Cursor="SizeNWSE" Opacity="0" DragDelta="Window_ResizeSE"></Thumb>
+        
+        <Canvas Grid.Column="1" Grid.Row="1">
+            <Canvas Name="myCanvas" 
+                Background="Transparent"
+                MouseMove="Canvas_MouseMove"
+                MouseDown="Canvas_MouseDown">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform x:Name="canvasTranslate" />
+                        <ScaleTransform x:Name="canvasScale" />
+                    </TransformGroup>
+                </Canvas.RenderTransform>
 
-        <Button Name="Exit" Click="exit_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="10" Canvas.Top="10"
-                Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">x</Button>
-        <Button Name="Maximize" Click="maximize_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="35" Canvas.Top="10"
-                Foreground="White" FontWeight="UltraBold" BorderBrush="WhiteSmoke" Background="Black">□</Button>
-        <Button Name="Minimize" Click="minimize_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="60" Canvas.Top="10"
-                Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">_</Button>
-        <Button Name="Clear" Click="clear_Click" DockPanel.Dock="Right" Width="52" Canvas.Left="85" Canvas.Top="10"
-                Foreground="White" FontWeight="UltraLight" BorderBrush="WhiteSmoke" Background="Black">Wyczyść</Button>
-        <Button Name="Special" Click="special_Click" DockPanel.Dock="Right" Width="97" Canvas.Left="142" Canvas.Top="10"
-                Foreground="White" FontWeight="UltraLight" BorderBrush="WhiteSmoke" Background="DarkRed">Przycisk specjalny</Button>
-        <Label Name="Info" Canvas.Left="200" Canvas.Top="290" Foreground="Gray">
-            Aby stworzyć notatkę, kliknij prawym przyciskiem myszy w dowolnym miejscu.</Label>
-
-
-    </Canvas>
+                <Grid Canvas.Left ="100" Canvas.Top="100"  Width="100" Height="100">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="3"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="3"/>
+                    </Grid.RowDefinitions>
+                    <Thumb Grid.Column="0" Grid.Row="0" Cursor="SizeNWSE" Opacity="0" DragDelta="Thumb_ResizeNW"></Thumb>
+                    <Thumb Grid.Column="0" Grid.Row="1" Cursor="SizeWE" Opacity="0" DragDelta="Thumb_ResizeW"></Thumb>
+                    <Thumb Grid.Column="0" Grid.Row="2" Cursor="SizeWE" Opacity="0" DragDelta="Thumb_ResizeW"></Thumb>
+                    <Thumb Grid.Column="0" Grid.Row="3" Cursor="SizeNESW" Opacity="0" DragDelta="Thumb_ResizeSW"></Thumb>
+                    <Thumb Grid.Column="1" Grid.Row="0" Cursor="SizeNS" Opacity="0" DragDelta="Thumb_ResizeN"></Thumb>
+                    <Thumb DragDelta="Thumb_DragDelta" Grid.Column="1" Grid.Row="1" >
+                        <Thumb.Template>
+                            <ControlTemplate>
+                                <Rectangle Name="Drag" Fill="Khaki"></Rectangle>
+                            </ControlTemplate>
+                        </Thumb.Template>
+                    </Thumb>
+                    <Thumb Grid.Column="1" Grid.Row="3" Cursor="SizeNS" Opacity="0" DragDelta="Thumb_ResizeS"></Thumb>
+                    <Thumb Grid.Column="2" Grid.Row="0" Cursor="SizeNESW" Opacity="0" DragDelta="Thumb_ResizeNE"></Thumb>
+                    <Thumb Grid.Column="2" Grid.Row="1" Cursor="SizeWE" Opacity="0" DragDelta="Thumb_ResizeE"/>
+                    <Thumb Grid.Column="2" Grid.Row="2" Cursor="SizeWE" Opacity="0" DragDelta="Thumb_ResizeE"/>
+                    <Thumb Grid.Column="2" Grid.Row="3" Cursor="SizeNWSE" Opacity="0" DragDelta="Thumb_ResizeSE"></Thumb>
+                    <RichTextBox Grid.Column="1" Grid.Row="2" Name="rtb" Padding="0 0 0 0" Background="Khaki">
+                        <RichTextBox.Resources>
+                            <Style TargetType="{x:Type Paragraph}">
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+                        </RichTextBox.Resources>
+                    </RichTextBox>
+                </Grid>
+            </Canvas>
+        
+            <Button Name="Maximize" Click="maximize_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="35" Canvas.Top="10"
+                    Foreground="White" FontWeight="UltraBold" BorderBrush="WhiteSmoke" Background="Black">□</Button>
+            <Button Name="Minimize" Click="minimize_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="60" Canvas.Top="10"
+                    Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">_</Button>
+            <!--Button Name="Clear" Click="clear_Click" DockPanel.Dock="Right" Width="52" Canvas.Left="85" Canvas.Top="10"
+                    Foreground="White" FontWeight="UltraLight" BorderBrush="WhiteSmoke" Background="Black">Wyczyść</-->
+            <!--Label Name="Info" Canvas.Left="200" Canvas.Top="290" Foreground="Gray">
+                Aby stworzyć notatkę, kliknij prawym przyciskiem myszy w dowolnym miejscu.</-->
+            <Button Name="Exit" Click="exit_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="10" Canvas.Top="10"
+                    Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">x
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform x:Name="buttonTranslate" />
+                        <ScaleTransform x:Name="buttonScale" />
+                    </TransformGroup>
+                </Button.RenderTransform>
+            </Button>
+        </Canvas>
+    </Grid>
 </Window>
