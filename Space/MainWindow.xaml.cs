@@ -9,15 +9,8 @@ using System.Windows.Media;
 
 namespace Space
 {
-    // INTERFEJS //
-    interface IColorShape
-    {
-        FrameworkElementFactory GetShape(string color);
-        string GetColor();
-    }
-   
-    public partial class MainWindow : Window
-    {
+     public partial class MainWindow : Window
+     {
         private static double mPX;
         private static double mPY;
         private static double lastMPX;
@@ -25,7 +18,6 @@ namespace Space
         // KOLEKCJA //
         private static List<Page> pages = new List<Page>();
         private int i = 0;
-        public static bool doesSpecialBoxExists = false;
         public static bool isMiddleMouseButtonClicked = false;
         public static double scrollLevel = 10;
 
@@ -134,9 +126,7 @@ namespace Space
                 canvasScale.ScaleY -= 0.1;
                 scrollLevel--;
             }
-
         }
-
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
