@@ -9,21 +9,22 @@ using System.Windows.Shapes;
 
 namespace Space
 {
-    // DZIEDZICZENIE //
-    public class Page : Grid
+    public class Note : Grid
     {
-        private int id;
+        public int id;
+        public RichTextBox rtb = new RichTextBox();
 
-        public Page() { }
+        public Note() { }
 
-        public Page(int i, double mPX, double mPY)
+        public Note(int i, double mPX, double mPY, double Width, double Height)
         {
-            id = i;
-            this.Name = "box" + i.ToString();
+            this.id = i;
+            this.Name = "note" + i.ToString();
             this.SetValue(Canvas.LeftProperty, mPX);
             this.SetValue(Canvas.TopProperty, mPY);
-            this.Width = 100;
-            this.Height = 100;
+            this.Width = Width;
+            this.Height = Height;
+            this.Background = new SolidColorBrush(Colors.Khaki);
 
             ColumnDefinition col1 = new ColumnDefinition();
             col1.Width = new GridLength(3);
@@ -48,16 +49,15 @@ namespace Space
 
             Thumb thumbNW = new Thumb();
             thumbNW.Cursor = Cursors.SizeNWSE;
-           // thumbNW.Opacity = 0;
+            thumbNW.Opacity = 0;
             thumbNW.DragDelta += new DragDeltaEventHandler(Thumb_ResizeNW);
-            thumbNW.Background = new SolidColorBrush(Colors.Red);
             Grid.SetRow(thumbNW, 0);
             Grid.SetColumn(thumbNW, 0);
             this.Children.Add(thumbNW);
 
             Thumb thumbN = new Thumb();
             thumbN.Cursor = Cursors.SizeNS;
-           // thumbN.Opacity = 0;
+            thumbN.Opacity = 0;
             thumbN.DragDelta += new DragDeltaEventHandler(Thumb_ResizeN);
             Grid.SetRow(thumbN, 0);
             Grid.SetColumn(thumbN, 1);
@@ -65,7 +65,7 @@ namespace Space
 
             Thumb thumbNE = new Thumb();
             thumbNE.Cursor = Cursors.SizeNESW;
-           // thumbNE.Opacity = 0;
+            thumbNE.Opacity = 0;
             thumbNE.DragDelta += new DragDeltaEventHandler(Thumb_ResizeNE);
             Grid.SetRow(thumbNE, 0);
             Grid.SetColumn(thumbNE, 2);
@@ -73,7 +73,7 @@ namespace Space
 
             Thumb thumbW = new Thumb();
             thumbW.Cursor = Cursors.SizeWE;
-           // thumbW.Opacity = 0;
+            thumbW.Opacity = 0;
             thumbW.DragDelta += new DragDeltaEventHandler(Thumb_ResizeW);
             Grid.SetRow(thumbW, 1);
             Grid.SetColumn(thumbW, 0);
@@ -81,7 +81,7 @@ namespace Space
 
             Thumb thumbE = new Thumb();
             thumbE.Cursor = Cursors.SizeWE;
-           // thumbE.Opacity = 0;
+            thumbE.Opacity = 0;
             thumbE.DragDelta += new DragDeltaEventHandler(Thumb_ResizeE);
             Grid.SetRow(thumbE, 1);
             Grid.SetColumn(thumbE, 2);
@@ -89,7 +89,7 @@ namespace Space
 
             Thumb thumbW2 = new Thumb();
             thumbW2.Cursor = Cursors.SizeWE;
-           // thumbW2.Opacity = 0;
+            thumbW2.Opacity = 0;
             thumbW2.DragDelta += new DragDeltaEventHandler(Thumb_ResizeW);
             Grid.SetRow(thumbW2, 2);
             Grid.SetColumn(thumbW2, 0);
@@ -97,7 +97,7 @@ namespace Space
 
             Thumb thumbE2 = new Thumb();
             thumbE2.Cursor = Cursors.SizeWE;
-           // thumbE2.Opacity = 0;
+            thumbE2.Opacity = 0;
             thumbE2.DragDelta += new DragDeltaEventHandler(Thumb_ResizeE);
             Grid.SetRow(thumbE2, 2);
             Grid.SetColumn(thumbE2, 2);
@@ -105,7 +105,7 @@ namespace Space
 
             Thumb thumbSW = new Thumb();
             thumbSW.Cursor = Cursors.SizeNESW;
-           // thumbSW.Opacity = 0;
+            thumbSW.Opacity = 0;
             thumbSW.DragDelta += new DragDeltaEventHandler(Thumb_ResizeSW);
             Grid.SetRow(thumbSW, 3);
             Grid.SetColumn(thumbSW, 0);
@@ -113,7 +113,7 @@ namespace Space
 
             Thumb thumbS = new Thumb();
             thumbS.Cursor = Cursors.SizeNS;
-           // thumbS.Opacity = 0;
+            thumbS.Opacity = 0;
             thumbS.DragDelta += new DragDeltaEventHandler(Thumb_ResizeS);
             Grid.SetRow(thumbS, 3);
             Grid.SetColumn(thumbS, 1);
@@ -121,7 +121,7 @@ namespace Space
 
             Thumb thumbSE = new Thumb();
             thumbSE.Cursor = Cursors.SizeNWSE;
-            //thumbSE.Opacity = 0;
+            thumbSE.Opacity = 0;
             thumbSE.DragDelta += new DragDeltaEventHandler(Thumb_ResizeSE);
             Grid.SetRow(thumbSE, 3);
             Grid.SetColumn(thumbSE, 2);
@@ -150,30 +150,12 @@ namespace Space
 
             Thumb thumbDrag = new Thumb();
             thumbDrag.DragDelta += new DragDeltaEventHandler(Thumb_DragDelta);
+            thumbDrag.Opacity = 0;
             Grid.SetRow(thumbDrag, 0);
             Grid.SetColumn(thumbDrag, 0);
             namePanel.Children.Add(thumbDrag);
 
-            //rectangle inside thumbDrag
-            var fecRectangle = new FrameworkElementFactory(typeof(System.Windows.Shapes.Rectangle));
-            fecRectangle.SetValue(System.Windows.Shapes.Rectangle.FillProperty, Brushes.Khaki);
-           
-            //thumbDrag Thumb Control
-            ControlTemplate thumbDragCtrl = new ControlTemplate();
-            thumbDragCtrl.VisualTree = fecRectangle;
-            thumbDrag.Template = thumbDragCtrl;
-            thumbE.Template = thumbDragCtrl;
-            thumbE2.Template = thumbDragCtrl;
-            thumbN.Template = thumbDragCtrl;
-            thumbNE.Template = thumbDragCtrl;
-            thumbNW.Template = thumbDragCtrl;
-            thumbS.Template = thumbDragCtrl;
-            thumbSE.Template = thumbDragCtrl;
-            thumbSW.Template = thumbDragCtrl;
-            thumbW.Template = thumbDragCtrl;
-            thumbW2.Template = thumbDragCtrl;
-
-            RichTextBox rtb = new RichTextBox();
+            rtb = new RichTextBox();
             rtb.Background = new SolidColorBrush(Colors.Khaki);
             rtb.BorderThickness = new Thickness(0);
             Style noSpaceStyle = new Style(typeof(Paragraph));
@@ -193,7 +175,7 @@ namespace Space
             {
                 current = VisualTreeHelper.GetParent(current);
             }
-            while (current.GetType() != typeof(Page));
+            while (current.GetType() != typeof(Note));
 
             return current;
         }

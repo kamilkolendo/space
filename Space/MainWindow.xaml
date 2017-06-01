@@ -31,14 +31,14 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="8"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="8"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="5"/>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="5"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition/>
+            <RowDefinition Height="8"/>
         </Grid.RowDefinitions>
 
         <Thumb Grid.Column="0" Grid.Row="0" Cursor="SizeNWSE" Opacity="0" DragDelta="Window_ResizeNW"></Thumb>
@@ -49,9 +49,14 @@
         <Thumb Grid.Column="2" Grid.Row="0" Cursor="SizeNESW" Opacity="0" DragDelta="Window_ResizeNE"></Thumb>
         <Thumb Grid.Column="2" Grid.Row="1" Cursor="SizeWE" Opacity="0" DragDelta="Window_ResizeE"/>
         <Thumb Grid.Column="2" Grid.Row="2" Cursor="SizeNWSE" Opacity="0" DragDelta="Window_ResizeSE"></Thumb>
-        
-        <Canvas Grid.Column="1" Grid.Row="1">
-            <Canvas Name="myCanvas" 
+
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"></RowDefinition>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Canvas Grid.Row="1" Name="myCanvas" 
                 Background="Transparent"
                 MouseMove="Canvas_MouseMove"
                 MouseDown="Canvas_MouseDown">
@@ -61,26 +66,41 @@
                         <ScaleTransform x:Name="canvasScale" />
                     </TransformGroup>
                 </Canvas.RenderTransform>
-
             </Canvas>
-        
-            <Button Name="Maximize" Click="maximize_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="35" Canvas.Top="10"
-                    Foreground="White" FontWeight="UltraBold" BorderBrush="WhiteSmoke" Background="Black">□</Button>
-            <Button Name="Minimize" Click="minimize_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="60" Canvas.Top="10"
-                    Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">_</Button>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="20"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="6" Name="Exit" Click="exit_Click" Width="20"
+                    Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black" Opacity="0.7">x</Button>
+                <Button Grid.Column="4" Name="Maximize" Click="maximize_Click" Width="20"
+                    Foreground="White" FontWeight="UltraBold" BorderBrush="WhiteSmoke" Background="Black" Opacity="0.7">□</Button>
+                <Button Grid.Column="2" Name="Minimize" Click="minimize_Click" Width="20 "
+                    Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black" Opacity="0.7">_</Button>
+                <Thumb Grid.Column="0" Name="DragBar" DragDelta="DragBar_DragDelta" MouseDown="DragBar_MouseDown">
+                    <Thumb.Template>
+                        <ControlTemplate>
+                            <Rectangle Fill="Black" Stroke="WhiteSmoke" Opacity="0.7"></Rectangle>
+                        </ControlTemplate>
+                    </Thumb.Template>
+                </Thumb>
+                    
+            </Grid>
+
+
             <!--Button Name="Clear" Click="clear_Click" DockPanel.Dock="Right" Width="52" Canvas.Left="85" Canvas.Top="10"
                     Foreground="White" FontWeight="UltraLight" BorderBrush="WhiteSmoke" Background="Black">Wyczyść</-->
             <!--Label Name="Info" Canvas.Left="200" Canvas.Top="290" Foreground="Gray">
                 Aby stworzyć notatkę, kliknij prawym przyciskiem myszy w dowolnym miejscu.</-->
-            <Button Name="Exit" Click="exit_Click" DockPanel.Dock="Right" Width="20" Canvas.Left="10" Canvas.Top="10"
-                    Foreground="White" FontWeight="DemiBold" BorderBrush="WhiteSmoke" Background="Black">x
-                <Button.RenderTransform>
-                    <TransformGroup>
-                        <TranslateTransform x:Name="buttonTranslate" />
-                        <ScaleTransform x:Name="buttonScale" />
-                    </TransformGroup>
-                </Button.RenderTransform>
-            </Button>
-        </Canvas>
+
+        </Grid>
     </Grid>
 </Window>

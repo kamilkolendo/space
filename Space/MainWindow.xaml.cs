@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace Space
@@ -15,19 +18,24 @@ namespace Space
         private static double mPY;
         private static double lastMPX;
         private static double lastMPY;
-        // KOLEKCJA //
-        private static List<Page> pages = new List<Page>();
-        private int i = 0;
+        private static List<Note> notes = new List<Note>();
+        private static List<NoteData> notesData = new List<NoteData>();
+        private static List<long> rtbStreamStartPosition = new List<long>();
+        private static int i = 0;
+        public static bool isLeftMouseButtonClicked = false;
         public static bool isMiddleMouseButtonClicked = false;
         public static double scrollLevel = 10;
+        MemoryStream ms;
 
         public MainWindow()
         {
             InitializeComponent();
+            load();
         }
 
         void exit_Click(object sender, RoutedEventArgs e)
         {
+            save();
             Application.Current.Shutdown();
         }
 
@@ -48,6 +56,106 @@ namespace Space
             MyWindow.WindowState = WindowState.Minimized;
         }
 
+        void save()
+        {
+            notesData.Clear();
+            rtbStreamStartPosition.Clear();
+            FileStream fs = new FileStream("richTextBoxes.bin", FileMode.Create, FileAccess.Write);
+            ms = new MemoryStream();
+            TextRange range;
+            long streamPositionSum = 0;
+            foreach (Note n in notes)
+            {
+                notesData.Add(new NoteData(n.id, (double)n.GetValue(Canvas.LeftProperty), (double)n.GetValue(Canvas.TopProperty), n.Width, n.Height, n.Background.ToString()));
+
+                range = new TextRange(n.rtb.Document.ContentStart, n.rtb.Document.ContentEnd);
+
+                ms = new MemoryStream();
+                range.Save(ms, DataFormats.XamlPackage);
+
+                if(n.id == 0)
+                {
+                    rtbStreamStartPosition.Add(0);
+                    streamPositionSum += ms.Length;
+                }
+                else
+                {
+                    rtbStreamStartPosition.Add(streamPositionSum);
+                    streamPositionSum += ms.Length;
+                }
+
+                ms.Position = 0;
+                ms.CopyTo(fs);
+
+                ms.Close();
+            }
+            fs.Close();          
+
+            IFormatter formatter = new BinaryFormatter();
+            fs = new FileStream("notesData.bin",
+                                        FileMode.Create,
+                                        FileAccess.Write, FileShare.None);
+            formatter.Serialize(fs, notesData);
+            fs.Close();
+            fs = new FileStream("rtbStreamStartPositions.bin",
+                                        FileMode.Create,
+                                        FileAccess.Write, FileShare.None);
+            formatter.Serialize(fs, rtbStreamStartPosition);
+            fs.Close();
+
+        }
+
+        void load()
+        {
+            if (File.Exists("richTextBoxes.bin") && File.Exists("notesData.bin"))
+            {
+                IFormatter formatter = new BinaryFormatter();
+                Stream fs = new FileStream("notesData.bin",
+                                          FileMode.Open,
+                                          FileAccess.Read,
+                                          FileShare.Read);
+                notesData = (List<NoteData>)formatter.Deserialize(fs);
+                fs.Close();
+                fs = new FileStream("rtbStreamStartPositions.bin",
+                                          FileMode.Open,
+                                          FileAccess.Read,
+                                          FileShare.Read);
+                rtbStreamStartPosition = (List<long>)formatter.Deserialize(fs);
+                fs.Close();
+
+                foreach (NoteData n in notesData)
+                {
+                    notes.Add(new Note(i, n.X, n.Y, n.Width, n.Height));
+                    myCanvas.Children.Add(notes[i]);
+                    i++;
+                }
+                
+                TextRange range;
+                for (int x = i-1; x>-1; x--)
+                {
+                    ms = new MemoryStream();
+                    range = new TextRange(notes[x].rtb.Document.ContentStart,
+                                    notes[x].rtb.Document.ContentEnd);
+
+                    fs = new FileStream("richTextBoxes.bin", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    fs.Position = rtbStreamStartPosition[x];
+
+                    ms.Position = 0;
+                    fs.CopyTo(ms);
+
+                    if (x > 0)
+                    {
+                        fs.SetLength(rtbStreamStartPosition[x]);
+
+                    }
+
+                    range.Load(ms, DataFormats.XamlPackage);
+                    ms.Close();
+                    fs.Close();
+                }
+            }
+        }
+            
 
         /*void clear_Click(object sender, RoutedEventArgs e)
         {
@@ -64,14 +172,17 @@ namespace Space
             if (e.ChangedButton == MouseButton.Middle)
             {
                 isMiddleMouseButtonClicked = false;
-
+                isLeftMouseButtonClicked = false;
             }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
+            {
+                // this.DragMove();
+                isLeftMouseButtonClicked = true;
+            }
 
             if (e.ChangedButton == MouseButton.Middle)
             {
@@ -84,14 +195,25 @@ namespace Space
             {
                 mPX = Mouse.GetPosition(this.myCanvas).X;
                 mPY = Mouse.GetPosition(this.myCanvas).Y;
-                pages.Add(new Page(i, mPX, mPY));
-                myCanvas.Children.Add(pages[i]);
+                notes.Add(new Note(i, mPX, mPY, 150, 150));             
+                myCanvas.Children.Add(notes[i]);
                 i++;
                 //Info.Opacity = 0.0;
             }
         }
 
-        private void Window_MouseMove(object sender, MouseEventArgs e)
+        private void DragBar_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            Application.Current.MainWindow.SetValue(LeftProperty, Application.Current.MainWindow.Left + e.HorizontalChange);
+            Application.Current.MainWindow.SetValue(TopProperty, Application.Current.MainWindow.Top + e.VerticalChange);
+        }
+
+        private void DragBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Application.Current.MainWindow.DragMove();
+        }
+
+            private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMiddleMouseButtonClicked == true)
             {
@@ -108,8 +230,6 @@ namespace Space
         {
             canvasScale.CenterX = 400;
             canvasScale.CenterY = 300;
-            buttonScale.CenterX = 400;
-            buttonScale.CenterY = 300;
 
             // If the mouse wheel delta is positive, move the box up.
             if (e.Delta > 0)
@@ -264,129 +384,6 @@ namespace Space
                 canvasTranslate.Y -= e.VerticalChange * (10 / scrollLevel);
                 this.SetValue(HeightProperty, newHeight);
                 Application.Current.MainWindow.SetValue(TopProperty, Application.Current.MainWindow.Top + e.VerticalChange);
-            }
-        }
-
-        private void Thumb_ResizeE(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newSize = Convert.ToDouble(rootThumb.GetValue(WidthProperty)) + e.HorizontalChange;
-            if (newSize >= 50)
-            {
-                rootThumb.SetValue(WidthProperty, newSize);
-            }
-        }
-
-        private void Thumb_ResizeW(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newSize = Convert.ToDouble(rootThumb.GetValue(WidthProperty)) - e.HorizontalChange;
-            if (newSize >= 50)
-            {
-                rootThumb.SetValue(WidthProperty, newSize);
-                Canvas.SetLeft(rootThumb, Canvas.GetLeft(rootThumb) + e.HorizontalChange);
-            }
-        }
-
-        private void Thumb_ResizeS(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newSize = Convert.ToDouble(rootThumb.GetValue(HeightProperty)) + e.VerticalChange;
-            if (newSize >= 50)
-            {
-                rootThumb.SetValue(HeightProperty, newSize);
-            }
-
-        }
-
-        private void Thumb_ResizeN(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newSize = Convert.ToDouble(rootThumb.GetValue(HeightProperty)) - e.VerticalChange;
-            if (newSize >= 50)
-            {
-                rootThumb.SetValue(HeightProperty, newSize);
-                Canvas.SetTop(rootThumb, Canvas.GetTop(rootThumb) + e.VerticalChange);
-            }
-        }
-
-        private void Thumb_ResizeSE(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newWidth = Convert.ToDouble(rootThumb.GetValue(WidthProperty)) + e.HorizontalChange;
-            double newHeight = Convert.ToDouble(rootThumb.GetValue(HeightProperty)) + e.VerticalChange;
-            if (newWidth >= 50)
-            {
-                rootThumb.SetValue(WidthProperty, newWidth);
-            }
-            if (newHeight >= 50)
-            {
-                rootThumb.SetValue(HeightProperty, newHeight);
-            }
-        }
-
-        private void Thumb_ResizeSW(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newWidth = Convert.ToDouble(rootThumb.GetValue(WidthProperty)) - e.HorizontalChange;
-            double newHeight = Convert.ToDouble(rootThumb.GetValue(HeightProperty)) + e.VerticalChange;
-            if (newWidth >= 50)
-            {
-                rootThumb.SetValue(WidthProperty, newWidth);
-                Canvas.SetLeft(rootThumb, Canvas.GetLeft(rootThumb) + e.HorizontalChange);
-            }
-            if (newHeight >= 50)
-            {
-                rootThumb.SetValue(HeightProperty, newHeight);
-            }
-        }
-
-        private void Thumb_ResizeNE(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newWidth = Convert.ToDouble(rootThumb.GetValue(WidthProperty)) + e.HorizontalChange;
-            double newHeight = Convert.ToDouble(rootThumb.GetValue(HeightProperty)) - e.VerticalChange;
-            if (newWidth >= 50)
-            {
-                rootThumb.SetValue(WidthProperty, newWidth);
-            }
-            if (newHeight >= 50)
-            {
-                rootThumb.SetValue(HeightProperty, newHeight);
-                Canvas.SetTop(rootThumb, Canvas.GetTop(rootThumb) + e.VerticalChange);
-            }
-        }
-
-        private void Thumb_ResizeNW(object sender, DragDeltaEventArgs e)
-        {
-            UIElement thumb = e.Source as UIElement;
-            UIElement rootThumb = FindVisualTreeRoot(thumb) as UIElement;
-
-            double newWidth = Convert.ToDouble(rootThumb.GetValue(WidthProperty)) - e.HorizontalChange;
-            double newHeight = Convert.ToDouble(rootThumb.GetValue(HeightProperty)) - e.VerticalChange;
-            if (newWidth >= 50)
-            {
-                rootThumb.SetValue(WidthProperty, newWidth);
-                Canvas.SetLeft(rootThumb, Canvas.GetLeft(rootThumb) + e.HorizontalChange);
-            }
-            if (newHeight >= 50)
-            {
-                rootThumb.SetValue(HeightProperty, newHeight);
-                Canvas.SetTop(rootThumb, Canvas.GetTop(rootThumb) + e.VerticalChange);
             }
         }
     }
